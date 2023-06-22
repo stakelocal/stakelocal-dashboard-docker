@@ -1,0 +1,71 @@
+#
+# minimal_goerli_config_v1.0.yml
+#
+# This is smallest configuration file possible for a Goerli staking group.
+#
+# Notes:
+#  - The Stake Local Dashboard supports multiple consensus/execution client
+#    pairs (groups), but this configuration assumes a single group. See the 
+#    multi_group_config_v1.0.yml file for a complete configuration supporting
+#    multiple consensus/execution client pairs on various networks.
+#  - This configuration assumes Goerli. See the minimal_mainnet_config_v1.0.yml
+#    file for the smallest functional Mainnet configuration.
+#  - Default values are used for the staking group name (Default Group)
+#    and the host name (Default Host). See the recommended_config_v1.0.yml
+#    for the smallest configuration that allows configuration that allows
+#    customization of group and host names.
+#
+# Instructions:
+#  - The section with service_type equal to "validator" may be removed if you
+#    are not using a stand-alone validator client.
+#  - service_type values that remain must not be modified.
+#  - software values must be one of besu, erigon, geth, lighthouse, lodestar,
+#    nethermind, nimbus, prysm, or teku.
+#  - metrics_address and api_address values must include a LAN IP address and
+#    port only. Do not use a loopback IP address such as localhost or 
+#    127.0.0.1.
+#  - metrics_address and api_address value ports must be opened and accessible
+#    to the Stake Local Dashboard docker continers.
+#  - validators values may be validator indices or addresses.
+#  - fee_addresses values must be quoted (single or double quotes).
+#  - consensus_explorer and execution_explorer must be the domain names of
+#    the beaconcha.in and etherscan.io instances for the Ethereum network used.
+#  - group_name and network values are for informational/labeling purposes only
+#    and do not require specific values.
+#
+# Additional Note on node_exporter:
+#  - When running in a docker container, node_exporter will not have access
+#    to all of the metrics available to a stand-alone node_exporter instance.
+#    If you would like to see all node_exporter metrics, node_exporter must
+#    be run and configured as a stand-alone service. See the
+#    multi_group_config_v1.0.yml file for more information on configuring
+#    a stand-along node_exporter instance.
+#
+# Default Consensus Client Metrics Ports: Lighthouse=5054, Lodestar=8008, Nimbus=8008, Prysm=8080, Teku=8008
+# Default Consensus Client API Ports: Lighthouse=5052, Lodestar=9596, Nimbus=5052, Prysm=3500, Teku=5051
+# Default Validator Client Metrics Ports: Lighthouse=5064, Lodestar=5064, Prysm=8081
+# Default Execution Clients Metrics Ports: Besu=9545, Erigon=6060, Geth=6060, Nethermind=N/A
+# Default Execution Clients API Ports: Besu=8545, Erigon=8545, Geth=8545, Nethermind=8545
+#
+
+version: '1.0'
+
+staking_groups:
+
+  - network: Goerli
+    services:
+      - service_type: consensus
+        software: prysm
+        metrics_address: 192.168.1.101:8080
+        api_address: 192.168.1.101:3500
+      - service_type: execution
+        software: nethermind
+        metrics_address: 192.168.1.101:6060
+        api_address: 192.168.1.101:8545
+      - service_type: validator
+        software: prysm
+        metrics_address: 192.168.1.101:8081
+    consensus_explorer: goerli.beaconcha.in
+    execution_explorer: goerli.etherscan.io
+    validators: [  1000, 1001, 1002, 1003, 1004 ]
+    fee_addresses: [ '0x0000000000000000000000000000000000000000', '0x0000000000000000000000000000000000000001' ]

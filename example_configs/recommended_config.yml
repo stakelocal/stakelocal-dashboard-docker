@@ -1,0 +1,94 @@
+#
+# recommended_config_v1.0.yml
+#
+# This configuration file allows for full configuration of a single
+# consensus/execution client pair (group).
+#
+# Notes:
+#  - The Stake Local Dashboard supports multiple consensus/execution client
+#    pairs (groups), but this configuration assumes a single group. See the
+#    multi_group_config_v1.0.yml file for a complete configuration supporting
+#    multiple consensus/execution client pairs on various networks.
+#
+# Instructions:
+#  - The section with service_type equal to "validator" may be removed if you
+#    are not using a stand-alone validator client.
+#  - service_type values that remain must not be modified.
+#  - software values must be one of besu, erigon, geth, lighthouse, lodestar,
+#    nethermind, nimbus, prysm, or teku.
+#  - metrics_address and api_address values must include a LAN IP address and
+#    port only. Do not use a loopback IP address such as localhost or
+#    127.0.0.1.
+#  - metrics_address and api_address value ports must be opened and accessible
+#    to the Stake Local Dashboard docker continers.
+#  - validators values may be validator indices or addresses.
+#  - fee_addresses values must be quoted (single or double quotes).
+#  - consensus_explorer and execution_explorer must be the domain names of
+#    the beaconcha.in and etherscan.io instances for the Ethereum network used.
+#  - group_name and network values are for informational/labeling purposes only
+#    and do not require specific values.
+#  - host values are intended to specify the server or VM on which the group
+#    or shared_services are running. For shared_services, this would be the 
+#    server or VM on which the Stake Local Dashboard docker containers are 
+#    running.
+#  - The section with service_type equal to ethereum_metrics_exporter does
+#    not require a metrics_address value unless you would like to connect
+#    to an instance of Ethereum Metrics Exporter that is external to the 
+#    docker app.
+#  - In this specific configuration example, the shared_services section
+#    only serves to speciy the host on which the services run. You can 
+#    omit that section entirely and they will be assigned the default host
+#    name (Default Host).
+#
+# Additional Note on node_exporter:
+#  - When running in a docker container, node_exporter will not have access
+#    to all of the metrics available to a stand-alone node_exporter instance.
+#    If you would like to see all node_exporter metrics, node_exporter must
+#    be run and configured as a stand-alone service. See the
+#    multi_group_config_v1.0.yml file for more information on configuring
+#    a stand-along node_exporter instance.
+#
+# Default Consensus Client Metrics Ports: Lighthouse=5054, Lodestar=8008, Nimbus=8008, Prysm=8080, Teku=8008
+# Default Consensus Client API Ports: Lighthouse=5052, Lodestar=9596, Nimbus=5052, Prysm=3500, Teku=5051
+# Default Validator Client Metrics Ports: Lighthouse=5064, Lodestar=5064, Prysm=8081
+# Default Execution Clients Metrics Ports: Besu=9545, Erigon=6060, Geth=6060, Nethermind=N/A
+# Default Execution Clients API Ports: Besu=8545, Erigon=8545, Geth=8545, Nethermind=8545
+#
+
+version: '1.0'
+
+staking_groups:
+
+  - group_name: 'Goerli Lighthouse/Besu'
+    network: 'Goerli'
+    services:
+      - service_type: consensus
+        software: lighthouse
+        host: server-name
+        metrics_address: 192.168.1.101:5054
+        api_address: 192.168.1.101:5052
+      - service_type: validator
+        software: lighthouse
+        host: server-name
+        metrics_address: 192.168.1.101:5064
+      - service_type: execution
+        software: besu
+        host: server-name
+        metrics_address: 192.168.1.101:9545
+        api_address: 192.168.1.101:8545
+      - service_type: ethereum_metrics_exporter
+        host: server-name
+    consensus_explorer: goerli.beaconcha.in
+    execution explorer: goerli.etherscan.io
+    validators: [  1000, 1001, 1002, 1003, 1004 ]
+    fee_addresses: [ '0x0000000000000000000000000000000000000000', '0x0000000000000000000000000000000000000001' ]
+
+shared_services:
+  - service_type: grafana
+    host: server-name
+  - service_type: prometheus
+    host: server-name
+  - service_type: json_exporter
+    host: server-name
+  - service_type: node_exporter
+    host: server-name

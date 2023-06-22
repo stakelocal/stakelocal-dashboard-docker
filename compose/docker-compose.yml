@@ -1,0 +1,67 @@
+version: "3.8"
+
+services:
+  prometheus:
+    image: prom/prometheus:${PROMETHEUS_VERSION:-v2.44.0}
+    volumes:
+      - ./prometheus/:/etc/prometheus/
+      - prom-data:/prometheus
+    networks: [stakelocal]
+    command: 
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - "--storage.tsdb.retention.time=${PROMETHEUS_RETENTION:-32d}"
+    ports: 
+      - "${PROMETHEUS_PORT:-9093}:9090"
+
+  grafana:
+    image: grafana/grafana:${GRAFANA_VERSION:-9.5.3}
+    depends_on: [prometheus]
+    volumes:
+      - ./grafana/provisioning/:/etc/grafana/provisioning/
+      - ./grafana/dashboards/:/var/lib/grafana/dashboards
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
+      - grafana-data:/var/lib/grafana
+    networks: [stakelocal]
+    environment:
+      GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: ${GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH:-/var/lib/grafana/dashboards/stakelocal-dashboard.json}
+    ports:
+      - "${GRAFANA_PORT:-3003}:3000"
+
+  node-exporter:
+    image: prom/node-exporter:${NODE_EXPORTER_VERSION:-v1.5.0}
+    privileged: true
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    pid: host
+    restart: unless-stopped
+    networks: [stakelocal]
+
+  ethereum-metrics-exporter:
+    image: ethpandaops/ethereum-metrics-exporter:${ETHEREUM_METRICS_EXPORTER_VERSION:-0.21.0}
+    command:
+      - '--config=/etc/ethereum-metrics-exporter/ethereum-metrics-exporter.yml'
+      - "--metrics-port=9095"
+    volumes:
+      - ./ethereum-metrics-exporter/ethereum-metrics-exporter.yml:/etc/ethereum-metrics-exporter/ethereum-metrics-exporter.yml
+    networks: [stakelocal]
+
+  json-exporter:
+    image: prometheuscommunity/json-exporter:${JSON_EXPORTER_VERSION:-v0.6.0}
+    networks: [stakelocal]
+    command: ["--config.file", "/etc/json_exporter/json_exporter.yml"]
+    volumes:
+      - ./json_exporter/json_exporter.yml:/etc/json_exporter/json_exporter.yml
+
+networks:
+  stakelocal:
+
+volumes:
+  prom-data:
+  grafana-data:

@@ -1,0 +1,22 @@
+# Byte-compiled / optimized files
+*.py[cod]
+__pycache__/
+
+# IDE-specific files
+.idea/
+.vscode/
+
+# Logs and databases
+*.log
+*.sqlite3
+.logs/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Custom configuration file created during installation instructions
+custom_config.yml
+
+# Test folders
+.test/

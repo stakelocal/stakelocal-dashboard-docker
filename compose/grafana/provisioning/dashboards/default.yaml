@@ -1,0 +1,14 @@
+apiVersion: 1
+
+providers:
+  - name: dashboards
+    type: file
+    disableDeletion: true
+    orgId: 1
+    updateIntervalSeconds: 60
+    options:
+      path: /var/lib/grafana/dashboards
+      # Immutable is set to false to allow customization of variable values.
+      # Changes will be overwritten when Grafana is restarted.
+      # To make changes persistent, save a copy of the dashboard.
+      immutable: false

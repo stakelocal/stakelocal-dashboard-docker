@@ -1,0 +1,224 @@
+#
+# multi_group_config_v1.0.yml
+#
+# This configuration file allows for full configuration of multiple
+# consensus/execution client pairs (groups). This example uses
+# all configuration fields available.
+#
+# Notes:
+#  - This configuration assumes multiple consensus/execution pairs (groups). 
+#    See the recommended_config_v1.0.yml file for a complete configuration
+#    supporting a single consensus/execution client pair.
+#
+# Instructions:
+#  - The section with service_type equal to "validator" may be removed if you
+#    are not using a stand-alone validator client.
+#  - service_type values that remain must not be modified.
+#  - software values must be one of besu, erigon, geth, lighthouse, lodestar,
+#    nethermind, nimbus, prysm, or teku.
+#  - metrics_address and api_address values must include a LAN IP address and
+#    port only. Do not use a loopback IP address such as localhost or
+#    127.0.0.1.
+#  - metrics_address and api_address value ports must be opened and accessible
+#    to the Stake Local Dashboard docker continers.
+#  - validators values may be validator indices or addresses.
+#  - fee_addresses values must be quoted (single or double quotes).
+#  - consensus_explorer and execution_explorer must be the domain names of
+#    the beaconcha.in and etherscan.io instances for the Ethereum network used.
+#  - group_name and network values are for informational/labeling purposes only
+#    and do not require specific values.
+#  - host values are intended to specify the server or VM on which the group
+#    or shared_services are running. For shared_services, this would be the
+#    server or VM on which the Stake Local Dashboard docker containers are
+#    running.
+#  - The section with service_type equal to ethereum_metrics_exporter does
+#    not require a metrics_address value unless you would like to connect
+#    to an instance of Ethereum Metrics Exporter that is external to the
+#    docker app.
+#  - The section with service_type equal to node-exporter does
+#    not require a metrics_address value unless you would like to connect
+#    to an instance of node_exporter that is external to the
+#    docker app.
+#  - By default, the Stake Local Dashboard supports the following currencies: 
+#    USD, EUR, JPY, GBP, AUD, CAD, CHF, CNY, HKD, NZD, ILS, KRW, MXN, RUB,
+#    SGD, TWD, and 'INR'. Include additional currencies in the currencies
+#    field at the bottom of this file. below. Additional currencies must be
+#    supported by the Coin Gecko API. To change the currency displayed on 
+#    the dashboard, modify the Currency variable on the dashboard Variables
+#    screen in the Grafana UI.
+#
+# Important:
+#  - The Stake Local Dashboard runs a single instance of Ethereum Metrics
+#    Exporter. Each instance of Ethereum Metrics Exporter supports a single
+#    consensus/execution pair (group). If you are running multiple 
+#    groups, you will need separate instances of Ethereum Metrics
+#    Exporter for each pair. Run these as stand-alone services and specify
+#    the metrics_address in the relevant configuration section.
+#  - The first group for which a metrics_address is not specified for 
+#    Ethereum Metrics Exporter will be assigned the Ethereum Metrics Exporter
+#    instance local to the Stake Local Dashboard docker app. Remaining groups
+#    for which metrics_address is not specified will not be configured to
+#    scrape an Ethereum Metrics Exporter instance.
+#  - The Stake Local Dashboard docker app uses port 9095 for Ethereum Metrics
+#    Exporter, because the default port of 9090 conflicts with the default 
+#    port for Prometheus. Be sure to use the correct port for any external
+#    instances of Ethereum Metrics Exporter.
+#  - In addition to created Prometheus targets for all Ethereum Metrics 
+#    Exporter instances, the configuration script will create configuration
+#    files for the Ethereum Metrics Exporter instances themselves. For the
+#    instance of Ethereum Metrics Exporter local to the Stake Local Dashboard
+#    docker app, the configuration will be in the file
+#    "compose/ethereum-metrics-exporter/ethereum-metrics-exporter.yml".
+#    Additional configuration files will be created in that same directory
+#    for externally-run instances of Ethereum Metrics Exporter. It is
+#    recommended that you use these generated configuration files for your
+#    additional instances to ensure full compatibility.
+#  - The Stake Local Dashboard runs a single instance of node_exporter. Each
+#    instance of node_exporter supports a single server. If you are running
+#    multiple servers, you will need separate instances of node_exporter
+#    server. Run these as stand-alone services and specify
+#    the metrics_address in the relevant configuration section.
+#  - The first node_exporter config for which a metrics_address is not
+#    specified will be assigned the node_exporter instance local to the Stake
+#    Local Dashboard docker app. Remaining servers for which metrics_address
+#    is not specified will not be configured to scrape an node_exporter
+#    instance.
+#  - In the example below, the "Goerli Lodestar/Nethermind" group running
+#    on "server-name-03" uses the local Ethereum Metrics Exporter and 
+#    node_exporter instances, and therefore does not specify metrics_address
+#    values for those.
+#  - You may use external instances of Ethereum Metrics Exporter and
+#    node_exporter for all groups and servers. The instances local to the
+#    Stake Local Dashboard docker app will go unused, but will still run
+#    by default. To avoid running the local copies add one or both of the
+#    following to your docker compose start command: 
+#    "--scale ethereum-metrics-exporter=0", "--scale node-exporter=0"
+#
+# Additional Note on node_exporter:
+#  - When running in a docker container, node_exporter will not have access
+#    to all of the metrics available to a stand-alone node_exporter instance.
+#    If you would like to see all node_exporter metrics, node_exporter must
+#    be run and configured as a stand-alone service. See the
+#    "Important" section above for more information on configuring
+#    a stand-along node_exporter instance.
+#
+# Default Consensus Client Metrics Ports: Lighthouse=5054, Lodestar=8008, Nimbus=8008, Prysm=8080, Teku=8008
+# Default Consensus Client API Ports: Lighthouse=5052, Lodestar=9596, Nimbus=5052, Prysm=3500, Teku=5051
+# Default Validator Client Metrics Ports: Lighthouse=5064, Lodestar=5064, Prysm=8081
+# Default Execution Clients Metrics Ports: Besu=9545, Erigon=6060, Geth=6060, Nethermind=N/A
+# Default Execution Clients API Ports: Besu=8545, Erigon=8545, Geth=8545, Nethermind=8545
+#
+
+version: '1.0'
+
+staking_groups:
+
+  - group_name: 'Mainnet Prysm/Geth'
+    network: 'Mainnet'
+    services:
+      - service_type: consensus
+        software: prysm
+        service_name: '01: Prysm Beacon'
+        host: server-name-01
+        metrics_address: 192.168.1.101:8080
+        api_address: 192.168.1.101:3500
+      - service_type: validator
+        software: prysm
+        service_name: '01: Prysm Validator'
+        host: server-name-01
+        metrics_address: 192.168.1.101:8081
+      - service_type: execution
+        software: geth
+        service_name: '01: Geth'
+        host: server-name-01
+        metrics_address: 192.168.1.101:6060
+        api_address: 192.168.1.101:8545
+      - service_type: ethereum_metrics_exporter
+        service_name: '01: Ethereum Metrics Exporter'
+        host: server-name-01
+        metrics_address: 192.168.1.101:9095
+    consensus_explorer: beaconcha.in
+    execution explorer: etherscan.io
+    validators: [ 1001, 1002, 1003, 1004, 1005 ]
+    fee_addresses: [ '0x0000000000000000000000000000000000000000', '0x0000000000000000000000000000000000000001' ]
+
+  - group_name: 'Goerli Lighthouse/Erigon'
+    network: 'Goerli'
+    services:
+      - service_type: consensus
+        software: lighthouse
+        service_name: '02: Lighthouse Beacon'
+        host: server-name-02
+        metrics_address: 192.168.1.102:5054
+        api_address: 192.168.1.102:5052
+      - service_type: validator
+        software: lighthouse
+        service_name: '02: Lighthouse Validator'
+        host: server-name-02
+        metrics_address: 192.168.1.102:5064
+      - service_type: execution
+        software: erigon
+        service_name: '02: Erigon'
+        host: server-name-02
+        metrics_address: 192.168.1.102:6060
+        api_address: 192.168.1.102:8545
+      - service_type: ethereum_metrics_exporter
+        service_name: '02: Ethereum Metrics Exporter'
+        host: server-name-02
+        metrics_address: 192.168.1.102:9095
+    consensus_explorer: goerli.beaconcha.in
+    execution explorer: goerli.etherscan.io
+    validators: [ 1006, 1007, 1008, 1009, 1010 ]
+    fee_addresses: [ '0x0000000000000000000000000000000000000002', '0x0000000000000000000000000000000000000003' ]
+
+  - group_name: 'Goerli Lodestar/Nethermind'
+    network: 'Goerli'
+    services:
+      - service_type: consensus
+        software: lodestar
+        service_name: '03: Lodestar Beacon'
+        host: server-name-03
+        metrics_address: 192.168.1.103:8008
+        api_address: 192.168.1.103:9596
+      - service_type: validator
+        software: lodestar
+        service_name: '03: Lodestar Validator'
+        host: server-name-03
+        metrics_address: 192.168.1.103:5064
+      - service_type: execution
+        software: nethermind
+        service_name: '03: Nethermind'
+        host: server-name-03
+        metrics_address: 192.168.1.103:6060
+        api_address: 192.168.1.103:8545
+      - service_type: ethereum_metrics_exporter
+        service_name: '03: Ethereum Metrics Exporter'
+        host: server-name-03
+    consensus_explorer: goerli.beaconcha.in
+    execution explorer: goerli.etherscan.io
+    validators: [ 1011, 1012, 1013, 1014, 1015 ]
+    fee_addresses: [ '0x0000000000000000000000000000000000000004', '0x0000000000000000000000000000000000000005' ]
+
+shared_services:
+  - service_type: grafana
+    service_name: '03: Grafana'
+    host: server-name-03
+  - service_type: prometheus
+    service_name: '03: Prometheus'
+    host: server-name-03
+  - service_type: json_exporter
+    service_name: '03: JSON Exporter'
+    host: server-name-03
+  - service_type: node_exporter
+    service_name: '01: Node Exporter'
+    host: server-name-01
+    metrics-address: 192.168.1.101:9100
+  - service_type: node_exporter
+    service_name: '02: Node Exporter'
+    host: server-name-03
+    metrics-address: 192.168.1.102:9100
+  - service_type: node_exporter
+    service_name: '03: Node Exporter'
+    host: server-name-03
+
+currencies: [ 'AED' ]
