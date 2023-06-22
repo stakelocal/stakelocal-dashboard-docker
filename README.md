@@ -23,7 +23,7 @@ The Stake Local Dashboard Docker project was created to simplify this process.
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/metanull-operator/stakelocal-dashboard-docker
+git clone https://github.com/stakelocal/stakelocal-dashboard-docker
 ```
 
 ### Create Configuration File
