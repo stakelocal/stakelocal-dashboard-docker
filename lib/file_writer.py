@@ -10,7 +10,7 @@ def store_config(config_files, filename, config):
         config_files[filename].append(config)
 
 
-def write_config_files(config_files, path, outer_array=True):
+def write_config_files(config_files, path, separate=False):
     complete = {}
 
     try:
@@ -25,10 +25,10 @@ def write_config_files(config_files, path, outer_array=True):
 
             with open(full_path, mode) as file:
                 for config in config_files[filename]:
-                    if outer_array:
-                        yaml.dump([config], file)
-                    else:
+                    if separate:
                         yaml.dump(config, file)
+                    else:
+                        yaml.dump([config], file)
                     complete[filename] += 1
                 print(f"{full_path} generated successfully with {complete[filename]} entries.")
 

@@ -9,14 +9,7 @@ __pycache__/
 # Logs and databases
 *.log
 *.sqlite3
-.logs/
 
 # OS-specific files
 .DS_Store
 Thumbs.db
-
-# Custom configuration file created during installation instructions
-custom-config.yml
-
-# Test folders
-.test/

@@ -10,7 +10,7 @@ def process_data_v1_0(data, prompath=None, emepath=None):
 
         if emepath is not None:
             config_files = generate_ethereum_metrics_exporter_configurations(data)
-            write_config_files(config_files, emepath)
+            write_config_files(config_files, emepath, True)
 
     except Exception as e:
         # Handle any specific exceptions here or log the error
