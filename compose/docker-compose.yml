@@ -1,4 +1,4 @@
-version: "3.8"
+version: '3.8'
 
 services:
   prometheus:
@@ -47,7 +47,7 @@ services:
     image: ethpandaops/ethereum-metrics-exporter:${ETHEREUM_METRICS_EXPORTER_VERSION:-0.21.0}
     command:
       - '--config=/etc/ethereum-metrics-exporter/ethereum-metrics-exporter.yml'
-      - "--metrics-port=9095"
+      - '--metrics-port=9095'
     volumes:
       - ./ethereum-metrics-exporter/ethereum-metrics-exporter.yml:/etc/ethereum-metrics-exporter/ethereum-metrics-exporter.yml
     networks: [stakelocal]
@@ -55,12 +55,15 @@ services:
   json-exporter:
     image: prometheuscommunity/json-exporter:${JSON_EXPORTER_VERSION:-v0.6.0}
     networks: [stakelocal]
-    command: ["--config.file", "/etc/json_exporter/json_exporter.yml"]
+    command: 
+      - '--config.file', '/etc/json_exporter/json_exporter.yml'
     volumes:
       - ./json_exporter/json_exporter.yml:/etc/json_exporter/json_exporter.yml
 
 networks:
   stakelocal:
+    name: ${DOCKER_NETWORK_NAME:-stakelocal}
+    external: ${DOCKER_NETWORK_EXTERNAL:-false}
 
 volumes:
   prom-data:
