@@ -55,8 +55,8 @@ services:
   json-exporter:
     image: prometheuscommunity/json-exporter:${JSON_EXPORTER_VERSION:-v0.6.0}
     networks: [stakelocal]
-    command: 
-      - '--config.file', '/etc/json_exporter/json_exporter.yml'
+    command:
+      - '--config.file=/etc/json_exporter/json_exporter.yml'
     volumes:
       - ./json_exporter/json_exporter.yml:/etc/json_exporter/json_exporter.yml
 
