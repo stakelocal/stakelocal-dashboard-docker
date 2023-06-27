@@ -1,0 +1,56 @@
+##
+## Instructions
+## ============
+##   This file will work as-is for a RocketPool system using locally-managed
+##   ethereum clients.
+##
+##   For consensus, execution, and validator clients, valid values for software
+##   are "besu", "erigon", "geth", "lighthouse", "lodestar", "nimbus",
+##   "nethermind", "prysm", or "teku". Using any other value or adding
+##   additional descriptive information to the client_name value will break
+##   some portions of the dashboard. See online documentation for information
+##   on using the "service" field as a more descriptive name.
+##
+##   Update host values to the name of the server/host/VM on which this
+##   docker application is running.
+##
+##   The validators field should be a comma-delimited list of validator indices
+##   or addresses. Both are are allowed at the same time in the list, but each
+##   validator should only be listed once.
+##
+##   The fee_addresses field must be a comma-delimited list of quoted Ethereum
+##   addresses. Omitting the quotes will break some dashboard panels.
+##
+##   All metrics_address and api_address values should remain as they are.
+##
+##
+version: '1.0'
+
+staking_groups:
+
+  - group_name: 'eth-docker Goerli Prysm/Geth'
+    network: 'Goerli'
+    services:
+      - service_type: consensus
+        host: server-name
+        software: prysm
+        metrics_address: consensus:8008
+        api_address: consensus:5052
+      - service_type: validator
+        software: prysm
+        host: server-name
+        metrics_address: validator:8009
+      - service_type: execution
+        software: geth
+        metrics_address: execution:6060
+        host: server-name
+        api_address: execution:8545
+    consensus_explorer: goerli.beaconcha.in
+    execution explorer: goerli.etherscan.io
+    validators: [ 1000, 1001, 1002, 1003, 1004, '0x0000000000000000000000000000000000000000' ]
+    fee_addresses: [ '0x0000000000000000000000000000000000000000',  '0x0000000000000000000000000000000000000000' ]
+
+    shared_services:
+      - service_type: node-exporter
+        host: server-name
+        metrics_address: sl-node-exporter:9100
