@@ -45,12 +45,20 @@ staking_groups:
         software: lodestar
         host: server-name
         metrics_address: validator:9101
+      - service_type: ethereum_metrics_exporter
+        host: server-name
     consensus_explorer: goerli.beaconcha.in
     execution explorer: goerli.etherscan.io
     validators: [ 1000, 1001, 1002, 1003, 1004, '0x0000000000000000000000000000000000000000' ]
     fee_addresses: [ '0x0000000000000000000000000000000000000000',  '0x0000000000000000000000000000000000000000' ]
 
     shared_services:
-      - service_type: node-exporter
+      - service_type: node_exporter
         host: server-name
-        metrics_address: node:9102
+      - service_type: grafana
+        host: server-name
+      - service_type: prometheus
+        host: server-name
+      - service_type: json_exporter
+        host: server-name
+

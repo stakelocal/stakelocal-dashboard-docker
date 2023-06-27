@@ -45,12 +45,19 @@ staking_groups:
         metrics_address: execution:6060
         host: server-name
         api_address: execution:8545
+      - service_type: ethereum_metrics_exporter
+        host: server-name
     consensus_explorer: goerli.beaconcha.in
     execution explorer: goerli.etherscan.io
     validators: [ 1000, 1001, 1002, 1003, 1004, '0x0000000000000000000000000000000000000000' ]
     fee_addresses: [ '0x0000000000000000000000000000000000000000',  '0x0000000000000000000000000000000000000000' ]
 
     shared_services:
-      - service_type: node-exporter
+      - service_type: node_exporter
         host: server-name
-        metrics_address: sl-node-exporter:9100
+      - service_type: grafana
+        host: server-name
+      - service_type: prometheus
+        host: server-name
+      - service_type: json_exporter
+        host: server-name
