@@ -1,16 +1,19 @@
-version: "3.8"
+version: '3.8'
 
 services:
   prometheus:
     image: prom/prometheus:${PROMETHEUS_VERSION:-v2.44.0}
     volumes:
       - ./prometheus/:/etc/prometheus/
-      - prom-data:/prometheus
-    networks: [stakelocal]
-    command: 
+      - prometheus-data:/prometheus
+    networks:
+      stakelocal:
+        aliases:
+          - sl-prometheus
+    command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - "--storage.tsdb.retention.time=${PROMETHEUS_RETENTION:-32d}"
-    ports: 
+    ports:
       - "${PROMETHEUS_PORT:-9093}:9090"
 
   grafana:
@@ -21,7 +24,10 @@ services:
       - ./grafana/dashboards/:/var/lib/grafana/dashboards
       - ./grafana/grafana.ini:/etc/grafana/grafana.ini
       - grafana-data:/var/lib/grafana
-    networks: [stakelocal]
+    networks:
+      stakelocal:
+        aliases:
+          - sl-grafana
     environment:
       GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH: ${GF_DASHBOARDS_DEFAULT_HOME_DASHBOARD_PATH:-/var/lib/grafana/dashboards/stakelocal-dashboard.json}
     ports:
@@ -41,27 +47,40 @@ services:
       - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
     pid: host
     restart: unless-stopped
-    networks: [stakelocal]
+    networks:
+      stakelocal:
+        aliases:
+          - sl-node-exporter
 
   ethereum-metrics-exporter:
     image: ethpandaops/ethereum-metrics-exporter:${ETHEREUM_METRICS_EXPORTER_VERSION:-0.21.0}
     command:
       - '--config=/etc/ethereum-metrics-exporter/ethereum-metrics-exporter.yml'
-      - "--metrics-port=9095"
+      - '--metrics-port=9095'
     volumes:
       - ./ethereum-metrics-exporter/ethereum-metrics-exporter.yml:/etc/ethereum-metrics-exporter/ethereum-metrics-exporter.yml
-    networks: [stakelocal]
+    networks:
+      stakelocal:
+        aliases:
+          - sl-ethereum-metrics-exporter
 
   json-exporter:
     image: prometheuscommunity/json-exporter:${JSON_EXPORTER_VERSION:-v0.6.0}
-    networks: [stakelocal]
-    command: ["--config.file", "/etc/json_exporter/json_exporter.yml"]
+    networks:
+      stakelocal:
+        aliases:
+          - sl-json-exporter
+    command:
+      - '--config.file=/etc/json_exporter/json_exporter.yml'
     volumes:
       - ./json_exporter/json_exporter.yml:/etc/json_exporter/json_exporter.yml
 
 networks:
   stakelocal:
+    name: ${DOCKER_NETWORK_NAME:-stakelocal}
+    external: ${DOCKER_NETWORK_EXTERNAL:-false}
 
 volumes:
-  prom-data:
+  prometheus-data:
   grafana-data:
+

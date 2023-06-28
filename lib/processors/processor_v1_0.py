@@ -1,6 +1,6 @@
 import re
 from lib.file_writer import store_config, write_config_files, create_filename
-from lib.constants import DEFAULT_GROUP, DEFAULT_HOST, DEFAULT_NETWORK, DEFAULT_CON_EXPLORER, DEFAULT_EXE_EXPLORER, DEFAULT_CURRENCIES, GITHUB_CLIENT_NAMES, CONSENSUS_CLIENTS, EXECUTION_CLIENTS, SERVICE_TYPE_VALIDATOR, SERVICE_TYPE_CONSENSUS, SERVICE_TYPE_EXECUTION, SERVICE_TYPE_JSON_EXPORTER, SERVICE_TYPE_GRAFANA, SERVICE_TYPE_PROMETHEUS, SERVICE_TYPE_NODE_EXPORTER, SERVICE_TYPE_BLACKBOX_EXPORTER, SERVICE_TYPE_ETH_METRICS
+from lib.constants import DEFAULT_GROUP, DEFAULT_HOST, DEFAULT_NETWORK, DEFAULT_CON_EXPLORER, DEFAULT_EXE_EXPLORER, DEFAULT_CURRENCIES, GITHUB_CLIENT_NAMES, CONSENSUS_CLIENTS, EXECUTION_CLIENTS, SERVICE_TYPE_VALIDATOR, SERVICE_TYPE_CONSENSUS, SERVICE_TYPE_EXECUTION, SERVICE_TYPE_JSON_EXPORTER, SERVICE_TYPE_GRAFANA, SERVICE_TYPE_PROMETHEUS, SERVICE_TYPE_NODE_EXPORTER, SERVICE_TYPE_BLACKBOX_EXPORTER, SERVICE_TYPE_ETH_METRICS, DOCKER_SERVICE_NAME_GRAFANA, DOCKER_SERVICE_NAME_PROMETHEUS, DOCKER_SERVICE_NAME_NODE_EXPORTER, DOCKER_SERVICE_NAME_JSON_EXPORTER, DOCKER_SERVICE_NAME_ETHEREUM_METRICS_EXPORTER
 
 def process_data_v1_0(data, prompath=None, emepath=None):
     try:
@@ -144,7 +144,7 @@ def generate_exe_client_api_targets(group, service, config_files):
             'service': service.get('service_name', software_name),
             'host': service.get('host', DEFAULT_HOST),
             'explorer': group.get('execution explorer', DEFAULT_EXE_EXPLORER),
-            'json_exporter': 'json-exporter:7979',
+            'json_exporter':  DOCKER_SERVICE_NAME_JSON_EXPORTER + ':7979',
             'network': group.get('network', DEFAULT_NETWORK),
             'group': group.get('group_name', DEFAULT_GROUP),
             'client': software_name,
@@ -206,11 +206,11 @@ def generate_node_exporter_targets(services, config_files):
 
     if services is not None:
         for service in services:
-            
+
             # If metrics_api is present, then it is a custom configuration.
             # No special logic needed.
             if 'metrics_address' in service:
-    
+
                 config = {
                     'labels': {
                         'client': software_name,
@@ -225,7 +225,7 @@ def generate_node_exporter_targets(services, config_files):
             # Without a metrics_api, we can use the local node_exporter,
             # but only the first one.
             else:
-    
+
                 if local_used:
                     # We don't have another local node_exporter to use.
                     print('node_exporter container already in use. Specify "metrics_api" for additional node_exporter instances.')
@@ -236,7 +236,7 @@ def generate_node_exporter_targets(services, config_files):
                             'host': service.get('host', DEFAULT_HOST),
                             'service': service.get('service_name', 'Node Exporter')
                         },
-                        'targets': ['node-exporter:9100']
+                        'targets': [DOCKER_SERVICE_NAME_NODE_EXPORTER + ':9100']
                     }
 
                     local_used = True
@@ -251,7 +251,7 @@ def generate_node_exporter_targets(services, config_files):
                 'host': DEFAULT_HOST,
                 'service': 'Node Exporter'
             },
-            'targets': ['node-exporter:9100']
+            'targets': [DOCKER_SERVICE_NAME_NODE_EXPORTER + ':9100']
         }
 
         store_config(config_files, filename, config)
@@ -281,7 +281,7 @@ def generate_prometheus_target(service, config_files):
         }
 
     # Make this configurable
-    config['targets'] = ['prometheus:9090']
+    config['targets'] = [DOCKER_SERVICE_NAME_PROMETHEUS + ':9090']
 
     store_config(config_files, 'prometheus.yml', config)
 
@@ -310,7 +310,7 @@ def generate_grafana_target(service, config_files):
         }
 
     # Make this configurable
-    config['targets'] = ['grafana:3000']
+    config['targets'] = [DOCKER_SERVICE_NAME_GRAFANA + ':3000']
 
     store_config(config_files, 'grafana.yml', config)
 
@@ -339,7 +339,7 @@ def generate_json_exporter_target(service, config_files):
         }
 
     # Make this configurable
-    config['targets'] = ['json-exporter:7979']
+    config['targets'] = [DOCKER_SERVICE_NAME_JSON_EXPORTER + ':7979']
 
     store_config(config_files, 'json_exporter.yml', config)
 
@@ -445,7 +445,7 @@ def generate_blackbox_exporter_target(service, config_files):
         }
 
         # Make this configurable
-        config['targets'] = ['blackbox-exporter:9115']
+        config['targets'] = [DOCKER_SERVICE_NAME_BLACKBOX_EXPORTER + ':9115']
 
         store_config(config_files, 'blackbox_exporter.yml', config)
 
@@ -468,7 +468,7 @@ def generate_ethereum_metrics_exporter_targets(group, service, config_files):
                 'service': 'Ethereum Metrics Exporter',
                 'client': software_name
             },
-            'targets': ['ethereum-metrics-exporter:9095']
+            'targets': [DOCKER_SERVICE_NAME_ETHEREUM_METRICS_EXPORTER + ':9095']
         }
         local_used = True
 
@@ -487,7 +487,7 @@ def generate_ethereum_metrics_exporter_targets(group, service, config_files):
         if 'metrics_address' in service:
             config['targets'] = [service['metrics_address']]
         else:
-            config['targets'] = ['ethereum-metrics-exporter:9095']
+            config['targets'] = [DOCKER_SERVICE_NAME_ETHEREUM_METRICS_EXPORTER + ':9095']
             local_used = True
 
     # We can only have a single target that uses the local instance.
@@ -562,5 +562,4 @@ def generate_ethereum_metrics_exporter_configurations(data):
                 store_config(config_files, filename, config)
 
     return config_files
-
 

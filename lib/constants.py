@@ -41,3 +41,10 @@ SERVICE_TYPE_NODE_EXPORTER = 'node_exporter'
 SERVICE_TYPE_BLACKBOX_EXPORTER = 'blackbox_exporter'
 SERVICE_TYPE_ETH_METRICS = 'ethereum_metrics_exporter'
 
+DOCKER_SERVICE_NAME_GRAFANA = 'sl-grafana'
+DOCKER_SERVICE_NAME_PROMETHEUS = 'sl-prometheus'
+DOCKER_SERVICE_NAME_NODE_EXPORTER = 'sl-node-exporter'
+DOCKER_SERVICE_NAME_JSON_EXPORTER = 'sl-json-exporter'
+DOCKER_SERVICE_NAME_ETHEREUM_METRICS_EXPORTER = 'sl-ethereum-metrics-exporter'
+DOCKER_SERVICE_NAME_BLACKBOX_EXPORTER = 'sl-blackbox-exporter'
+

@@ -221,7 +221,7 @@ scrape_configs:
       target_label: __param_target
     - action: replace
       target_label: __address__
-      replacement: 'json-exporter:7979'
+      replacement: 'sl-json-exporter:7979'
 
   ##
   ## Ping
@@ -240,7 +240,7 @@ scrape_configs:
       - source_labels: [ __param_target ]
         target_label: instance
       - target_label: __address__
-        replacement: blackbox-exporter:9115  # The blackbox exporter's real hostname:port.
+        replacement: sl-blackbox-exporter:9115  # The blackbox exporter's real hostname:port.
 
   ###
   ### Reporting Tools
@@ -361,7 +361,7 @@ scrape_configs:
       target_label: __param_target
     - action: replace
       target_label: __address__
-      replacement: 'json-exporter:7979'
+      replacement: 'sl-json-exporter:7979'
     metric_relabel_configs:
     - action: replace
       source_labels: [pubkey]
@@ -401,7 +401,7 @@ scrape_configs:
       target_label: __param_target
     - action: replace
       target_label: __address__
-      replacement: 'json-exporter:7979'
+      replacement: 'sl-json-exporter:7979'
 
   ##
   ## job_name: consensus_beacon_headers_finalized
@@ -436,7 +436,7 @@ scrape_configs:
       target_label: __param_target
     - action: replace
       target_label: __address__
-      replacement: 'json-exporter:7979'
+      replacement: 'sl-json-exporter:7979'
 
   ##
   ## job_name: consensus_node_peer_count
@@ -471,7 +471,7 @@ scrape_configs:
       target_label: __param_target
     - action: replace
       target_label: __address__
-      replacement: 'json-exporter:7979'
+      replacement: 'sl-json-exporter:7979'
 
   ##
   ## job_name: consensus_beacon_genesis
@@ -506,7 +506,7 @@ scrape_configs:
       target_label: __param_target
     - action: replace
       target_label: __address__
-      replacement: 'json-exporter:7979'
+      replacement: 'sl-json-exporter:7979'
     metric_relabel_configs:
     - action: replace
       source_labels: [is_syncing]
@@ -552,7 +552,7 @@ scrape_configs:
       target_label: __param_target
     - action: replace
       target_label: __address__
-      replacement: 'json-exporter:7979'
+      replacement: 'sl-json-exporter:7979'
     metric_relabel_configs:
     - action: replace
       source_labels: [is_syncing]
@@ -601,7 +601,7 @@ scrape_configs:
       target_label: __param_target
     - action: replace
       target_label: __address__
-      replacement: 'json-exporter:7979'
+      replacement: 'sl-json-exporter:7979'
     metric_relabel_configs:
     - action: labeldrop
       regex: 'client'
@@ -643,7 +643,7 @@ scrape_configs:
       target_label: __param_target
     - action: replace
       target_label: __address__
-      replacement: 'json-exporter:7979'
+      replacement: 'sl-json-exporter:7979'
     metric_relabel_configs:
     - action: labeldrop
       regex: 'client'
@@ -674,7 +674,7 @@ scrape_configs:
       target_label: __param_target
     - action: replace
       target_label: __address__
-      replacement: 'json-exporter:7979'
+      replacement: 'sl-json-exporter:7979'
 
   ##
   ## job_name: execution_eth_maxPriorityFeePerGas
@@ -704,7 +704,7 @@ scrape_configs:
       target_label: __param_target
     - action: replace
       target_label: __address__
-      replacement: 'json-exporter:7979'
+      replacement: 'sl-json-exporter:7979'
 
   ##
   ## job_name: execution_eth_feeHistory
@@ -732,7 +732,7 @@ scrape_configs:
       target_label: __param_target
     - action: replace
       target_label: __address__
-      replacement: 'json-exporter:7979'
+      replacement: 'sl-json-exporter:7979'
 
   ##
   ## job_name: execution_eth_blockNumber
@@ -760,7 +760,7 @@ scrape_configs:
 #      target_label: __param_target
 #    - action: replace
 #      target_label: __address__
-#      replacement: 'json-exporter:7979'
+#      replacement: 'sl-json-exporter:7979'
 
   ##
   ## job_name: execution_eth_syncing
@@ -788,7 +788,7 @@ scrape_configs:
       target_label: __param_target
     - action: replace
       target_label: __address__
-      replacement: 'json-exporter:7979'
+      replacement: 'sl-json-exporter:7979'
     metric_relabel_configs:
     - action: labeldrop
       regex: 'client'
@@ -819,7 +819,7 @@ scrape_configs:
       target_label: __param_target
     - action: replace
       target_label: __address__
-      replacement: 'json-exporter:7979'
+      replacement: 'sl-json-exporter:7979'
     metric_relabel_configs:
     - action: labeldrop
       regex: 'client'
@@ -855,7 +855,7 @@ scrape_configs:
       target_label: __param_target
     - action: replace
       target_label: __address__
-      replacement: 'json-exporter:7979'
+      replacement: 'sl-json-exporter:7979'
     metric_relabel_configs:
     - action: labeldrop
       regex: 'client'
@@ -893,7 +893,7 @@ scrape_configs:
       target_label: __param_target
     - action: replace
       target_label: __address__
-      replacement: 'json-exporter:7979'
+      replacement: 'sl-json-exporter:7979'
     metric_relabel_configs:
     - action: labeldrop
       regex: 'client'
@@ -931,7 +931,7 @@ scrape_configs:
       target_label: instance
       replacement: 'api.coingecko.com'
     - target_label: __address__
-      replacement: json-exporter:7979
+      replacement: sl-json-exporter:7979
     metric_relabel_configs:
     - action: replace
       source_labels: [__name__]
@@ -941,3 +941,4 @@ scrape_configs:
     - action: replace
       target_label: __name__
       replacement: 'ethprice'
+

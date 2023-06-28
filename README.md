@@ -16,7 +16,7 @@ The Stake Local Dashboard uses Grafana and Prometheus to collect and display Eth
 
 The Stake Local Dashboard Docker project was created to simplify this process.
 
-**If you are running services across multiple hosts and would like to see node_exporter data from more than one hosts, you will need to run additional stand-alone node_exporter instances on each host. If you are running multiple consensus/execution clients, you will need to run additional Ethereum Metrics Exporter instances for each group. The Stake Local Dashboard Docker supports running a single instance of node_exporter and Ethereum Metrics Exporter. These can be used for one host and one group. All others will require separate instances.*
+**If you are running services across multiple hosts and would like to see node_exporter data from more than one hosts, you will need to run additional stand-alone node_exporter instances on each host. If you are running multiple consensus/execution clients, you will need to run additional Ethereum Metrics Exporter instances for each group. The Stake Local Dashboard Docker supports running a single instance of node_exporter and Ethereum Metrics Exporter (for now). These can be used for one host and one group. All others will require separate instances.*
 
 ## Configuration
 
@@ -34,29 +34,33 @@ Other example configuration files provided include:
 
 - `minimal_goerli_config.yml` - A minimal configuration to get you up and running on the Goerli network quickly.
 - `multi_group_config.yml` - A maximal configuration supporting multiple consensus/execution client groups running on multiple hosts. Includes support for external stand-alone node_exporter and Ethereum Metrics Exporter instances while using the docker internal instances for a single group.
+- `eth-docker_config.yml` - A configuration for running the Stake Local Dashboard docker application alongside eth-docker. 
+- `rocketpool_config.yml` - A configuration for running the Stake Local Dashboar docker application alongside RocketPool.
 
 ```bash
 cd stakelocal-dashboard-docker
 cp example_configs/recommended_config.yml ./custom_config.yml
 ```
 
-Edit the `custom_config.yml`.
+Edit the `custom_config.yml` and make changes based on one of the following sections.
 
 ```bash
 nano custom_config.yml
 ```
 
-Modify the following
+Modify the following values, as needed:
 
 - **group_name** - The name you use to distinguish one consensus/execution pair from another. You will select this from a menu in the dashboard to switch between groups. For example, "Goerli Lighthouse/Besu".
 - **network** - The name of the network to which you are connecting. For example, "Mainnet". This is for display purposes only. Any network name will work.
 - **services** - For each service in the `services` section, modify the following:
   - **software** - For `consensus` service_type, this must be `lighthouse`, `lodestar`, `nimbus`, `prysm`, or `teku`. For `execution` service type, this must be `besu`, `erigon`, `geth`, or `nethermind`. For validator service_type, this must be  `lighthouse`, `lodestar`, or `prysm`.
   - **host** - The name you use to distinguish one server or VM from another. You will select this from a menu in the dashboard to switch between hosts for node_exporter data. For example: "server-name".
-  - **metrics_address** and **api_address** - The IP address and port at which the metrics and API methods may be accessed. The IP address must be a LAN address and not a loopback address (127.0.0.1, localhost). Default ports for all clients are provided in the example files. `validator` service_type does not require `api_address`.
+  - **metrics_address** and **api_address** - The IP address and port at which the metrics and API methods may be accessed. The IP address must be a LAN address or docker service name and not a loopback address (127.0.0.1, localhost).
+    - **RocketPool and eth-docker:** Leave these values unchanged from the values set in the example configuration files. These values are configured to support their specific docker service names and ports.
+    - Validator clients do not require an `api_address` value.
 - **consensus_explorer** - The domain name to beaconcha.in for the correct network. For example: "goerli.beaconcha.in".
 - **execution_explorer** - The domain name to etherscan.io for the correct network. For example: "goerli.etherscan.io".
-- **validators** - The indices or addresses of your validators. This information is used for validator balances. Validator addresses must be in quotes, single or double.
+- **validators** - The indices or addresses of your validators. This information is used for validator balances. Validator addresses must be in quotes, single or double. Validator indices do not need to be quoted.
 - **fee_addresses** - Ethereum addresses for any configured fee addresses. This information is used for fee address balances. Fee addresses must be in quotes, single or double.
 - **shared_services** - For each service in the `shared_services` section, modify the following:
   - **host** - The name you use to distinguish one server or VM from another. You will select this from a menu in the dashboard to switch between hosts for software data. This should be the name of the server of VM on which the docker app is running.
@@ -94,6 +98,22 @@ Configuration completed successfully.
 
 Configuration is complete.
 
+### RocketPool and eth-docker Environment Configuration
+
+RocketPool and eth-docker monitoring will require access to the network internal to RocketPool and eth-docker applications. This can be configured in the `.env` file. Pre-configured `.env` files have been provided for both RocketPool and eth-docker. Copy the appropriate file over the `compose/.env` file.
+
+For RocketPool:
+
+```bash
+cp compose/.env.rocketpool compose/.env
+```
+
+For eth-docker:
+
+```bash
+cp compose/.env.eth-docker compose/.env
+```
+
 ### Configure Firewall
 
 Make sure that port 3003 is open on your server, this is the port at which you can access the Grafana dashboard. 
@@ -114,7 +134,7 @@ To start the dashboard, run the following command:
 sudo docker compose -f compose/docker-compose.yml -p stakelocal up --detach
 ```
 
-Access the dashboard at: http://XXX.XXX.XXX.XXX:3000, where `XXX.XXX.XXX.XXX` is the IP address of the system on which docker is running.
+Access the dashboard at: http://XXX.XXX.XXX.XXX:3003, where `XXX.XXX.XXX.XXX` is the IP address of the system on which docker is running.
 
 While most data on the dashboard will appear immediately, some data may take additional time to appear.
 
@@ -133,3 +153,4 @@ sudo docker compose -f compose/docker-compose.yml -p stakelocal down
 ## Notes
 
 - Some data points reset after the source client has been restarted. For example, proposal data for individual validators and the total number of proposals will reset after the Prysm client is restarted.
+- RocketPool and eth-docker both run their own instances of Prometheus, Grafana, and other monitoring utilities. Running this application alongside either of those will result in two copies of these applications running at the same time. This is a first attempt at integrating this dashboard with these applications and solutions may be found later to avoid duplication of processes.
