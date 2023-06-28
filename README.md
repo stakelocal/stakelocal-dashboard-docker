@@ -34,8 +34,8 @@ Other example configuration files provided include:
 
 - `minimal_goerli_config.yml` - A minimal configuration to get you up and running on the Goerli network quickly.
 - `multi_group_config.yml` - A maximal configuration supporting multiple consensus/execution client groups running on multiple hosts. Includes support for external stand-alone node_exporter and Ethereum Metrics Exporter instances while using the docker internal instances for a single group.
-- eth-docker_config.yml - A configuration for running the Stake Local Dashboard docker application alongside eth-docker. 
-- rocketpool_config.yml - A configuration for running the Stake Local Dashboar docker application alongside RocketPool.
+- `eth-docker_config.yml` - A configuration for running the Stake Local Dashboard docker application alongside eth-docker. 
+- `rocketpool_config.yml` - A configuration for running the Stake Local Dashboar docker application alongside RocketPool.
 
 ```bash
 cd stakelocal-dashboard-docker
@@ -60,7 +60,7 @@ Modify the following values, as needed:
     - Validator clients do not require an `api_address` value.
 - **consensus_explorer** - The domain name to beaconcha.in for the correct network. For example: "goerli.beaconcha.in".
 - **execution_explorer** - The domain name to etherscan.io for the correct network. For example: "goerli.etherscan.io".
-- **validators** - The indices or addresses of your validators. This information is used for validator balances. Validator addresses must be in quotes, single or double.
+- **validators** - The indices or addresses of your validators. This information is used for validator balances. Validator addresses must be in quotes, single or double. Validator indices do not need to be quoted.
 - **fee_addresses** - Ethereum addresses for any configured fee addresses. This information is used for fee address balances. Fee addresses must be in quotes, single or double.
 - **shared_services** - For each service in the `shared_services` section, modify the following:
   - **host** - The name you use to distinguish one server or VM from another. You will select this from a menu in the dashboard to switch between hosts for software data. This should be the name of the server of VM on which the docker app is running.
