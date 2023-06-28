@@ -1,8 +1,7 @@
 ##
 ## Instructions
 ## ============
-##   This file will work as-is for a RocketPool system using locally-managed
-##   ethereum clients.
+##   This file will work as-is for an eth-docker system.
 ##
 ##   For consensus, execution, and validator clients, valid values for software
 ##   are "besu", "erigon", "geth", "lighthouse", "lodestar", "nimbus",
